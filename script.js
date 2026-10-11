@@ -1,201 +1,287 @@
-const display = document.getElementById("display");
+
+const display = document.getElementById("textInput");
+const statusMessage = document.getElementById("status");
 const keys = document.querySelectorAll(".key");
+const clearButton = document.getElementById("clearText");
+const copyButton = document.getElementById("copyText");
+
 let capsLock = false;
-let shiftPressed = false;
-let ctrlPressed = false;
-let altPressed = false;
-let text = "";
+let shiftActive = false;
 
-keys.forEach(function (key) {
-    key.addEventListener("click", function () {
-        const keyValue = key.dataset.key;
-        handleKey(keyValue);
-    });
-});
+function showStatus(message) {
+  statusMessage.textContent = message;
+}
 
-function handleKey(keyValue) {
-    if (keyValue === "Backspace") {
-        text = text.slice(0, -1);
-    } else if (keyValue === "Enter") {
-        text += "\n";
-    } else if (keyValue === "Tab") {
-        text += "\t";
-    } else if (keyValue === "Space") {
-        text += " ";
-    } else if (keyValue === "CapsLock") {
-        capsLock = !capsLock;
-        toggleActiveKey("CapsLock");
-    } else if (keyValue === "Shift") {
-        shiftPressed = !shiftPressed;
-        toggleActiveKey("Shift");
-    } else if (keyValue === "Control") {
-        ctrlPressed = !ctrlPressed;
-        toggleActiveKey("Control");
-    } else if (keyValue === "Alt") {
-        altPressed = !altPressed;
-        toggleActiveKey("Alt");
-    } else if (keyValue === "Delete") {
-        text = "";
-    } else if (keyValue === "ArrowLeft") {
-        moveCursor("left");
-    } else if (keyValue === "ArrowRight") {
-        moveCursor("right");
-    } else if (keyValue === "ArrowUp") {
-        moveCursor("up");
-    } else if (keyValue === "ArrowDown") {
-        moveCursor("down");
-    } else if (keyValue === "Home") {
-        text = "";
-    } else if (keyValue === "End") {
-        display.focus();
-        display.selectionStart = text.length;
-        display.selectionEnd = text.length;
-    } else if (keyValue === "Escape") {
-        text = "";
-    } else if (keyValue === "F1") {
-        showFunctionMessage("F1");
-    } else if (keyValue === "F2") {
-        showFunctionMessage("F2");
-    } else if (keyValue === "F3") {
-        showFunctionMessage("F3");
-    } else if (keyValue === "F4") {
-        showFunctionMessage("F4");
-    } else if (keyValue === "F5") {
-        showFunctionMessage("F5");
-    } else if (keyValue === "F6") {
-        showFunctionMessage("F6");
-    } else if (keyValue === "F7") {
-        showFunctionMessage("F7");
-    } else if (keyValue === "F8") {
-        showFunctionMessage("F8");
-    } else if (keyValue === "F9") {
-        showFunctionMessage("F9");
-    } else if (keyValue === "F10") {
-        showFunctionMessage("F10");
-    } else if (keyValue === "F11") {
-        showFunctionMessage("F11");
-    } else if (keyValue === "F12") {
-        showFunctionMessage("F12");
-    } else if (keyValue === "Clear") {
-        text = "";
-    } else {
-        let character = keyValue;
-        if (capsLock || shiftPressed) {
-            character = character.toUpperCase();
-        }
-        text += character;
-        if (shiftPressed) {
-            shiftPressed = false;
-            removeActiveKey("Shift");
-        }
+function insertText(text) {
+  const start = display.selectionStart;
+  const end = display.selectionEnd;
+
+  display.setRangeText(text, start, end, "end");
+  display.focus();
+}
+
+function getCharacter(keyName) {
+  const shiftedSymbols = {
+    "1": "!",
+    "2": "@",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "^",
+    "7": "&",
+    "8": "*",
+    "9": "(",
+    "0": ")",
+    "-": "_",
+    "=": "+",
+    "[": "{",
+    "]": "}",
+    ";": ":",
+    "'": '"',
+    ",": "<",
+    ".": ">",
+    "/": "?",
+    "\\": "|",
+    "`": "~"
+  };
+
+  if (keyName.length === 1 && /[a-z]/i.test(keyName)) {
+    const uppercase = capsLock !== shiftActive;
+    return uppercase
+      ? keyName.toUpperCase()
+      : keyName.toLowerCase();
+  }
+
+  if (shiftActive && shiftedSymbols[keyName]) {
+    return shiftedSymbols[keyName];
+  }
+
+  return keyName;
+}
+
+function updateModifierKeys() {
+  keys.forEach((key) => {
+    const keyName = key.dataset.key;
+
+    if (keyName === "CapsLock") {
+      key.classList.toggle("active", capsLock);
+      key.setAttribute("aria-pressed", String(capsLock));
     }
-    updateDisplay();
-}
 
-function updateDisplay() {
-    display.value = text;
-}
-
-function toggleActiveKey(keyName) {
-    keys.forEach(function (key) {
-        if (key.dataset.key === keyName) {
-            key.classList.toggle("active");
-        }
-    });
-}
-
-function removeActiveKey(keyName) {
-    keys.forEach(function (key) {
-        if (key.dataset.key === keyName) {
-            key.classList.remove("active");
-        }
-    });
-}
-
-function moveCursor(direction) {
-    const currentPosition = display.selectionStart;
-    if (direction === "left") {
-        display.focus();
-        display.selectionStart = Math.max(0, currentPosition - 1);
-        display.selectionEnd = display.selectionStart;
+    if (keyName === "Shift") {
+      key.classList.toggle("active", shiftActive);
+      key.setAttribute("aria-pressed", String(shiftActive));
     }
-    if (direction === "right") {
-        display.focus();
-        display.selectionStart = Math.min(text.length, currentPosition + 1);
-        display.selectionEnd = display.selectionStart;
+  });
+}
+function handleSpecialKey(keyName) {
+  const start = display.selectionStart;
+  const end = display.selectionEnd;
+  const value = display.value;
+
+  switch (keyName) {
+    case "Backspace":
+      if (start !== end) {
+        display.setRangeText("", start, end, "end");
+      } else if (start > 0) {
+        display.setRangeText("", start - 1, start, "end");
+      }
+      break;
+
+    case "Delete":
+      if (start !== end) {
+        display.setRangeText("", start, end, "end");
+      } else if (end < value.length) {
+        display.setRangeText("", end, end + 1, "end");
+      }
+      break;
+
+    case "Enter":
+      insertText("\n");
+      break;
+
+    case "Tab":
+      insertText("\t");
+      break;
+
+    case "Space":
+      insertText(" ");
+      break;
+
+    case "ArrowLeft":
+      display.setSelectionRange(
+        Math.max(0, start - 1),
+        Math.max(0, start - 1)
+      );
+      break;
+
+    case "ArrowRight":
+      display.setSelectionRange(
+        Math.min(value.length, end + 1),
+        Math.min(value.length, end + 1)
+      );
+      break;
+
+    case "ArrowUp":
+    case "ArrowDown": {
+      const cursor = display.selectionStart;
+      const beforeCursor = value.slice(0, cursor);
+      const currentLineStart = beforeCursor.lastIndexOf("\n") + 1;
+      const column = cursor - currentLineStart;
+
+      if (keyName === "ArrowUp" && currentLineStart > 0) {
+        const previousLineEnd = currentLineStart - 1;
+        const previousLineStart =
+          value.lastIndexOf("\n", previousLineEnd - 1) + 1;
+
+        const newPosition = Math.min(
+          previousLineStart + column,
+          previousLineEnd
+        );
+
+        display.setSelectionRange(newPosition, newPosition);
+      } else if (
+        keyName === "ArrowDown" &&
+        value.indexOf("\n", cursor) !== -1
+      ) {
+        const currentLineEnd = value.indexOf("\n", cursor);
+        const nextLineStart = currentLineEnd + 1;
+        const nextLineEndIndex = value.indexOf("\n", nextLineStart);
+
+        const nextLineEnd =
+          nextLineEndIndex === -1
+            ? value.length
+            : nextLineEndIndex;
+
+        const newPosition = Math.min(
+          nextLineStart + column,
+          nextLineEnd
+        );
+
+        display.setSelectionRange(newPosition, newPosition);
+      }
+      break;
     }
+
+    case "Home": {
+      const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+      display.setSelectionRange(lineStart, lineStart);
+      break;
+    }
+
+    case "End": {
+      const lineEndIndex = value.indexOf("\n", end);
+      const lineEnd =
+        lineEndIndex === -1 ? value.length : lineEndIndex;
+
+      display.setSelectionRange(lineEnd, lineEnd);
+      break;
+    }
+
+    case "Escape":
+      showStatus("Escape pressed.");
+      break;
+
+    default:
+      return false;
+  }
+
+  display.focus();
+  return true;
 }
 
-function showFunctionMessage(keyName) {
-    console.log(keyName + " pressed");
-}
+keys.forEach((key) => {
+  key.addEventListener("pointerdown", (event) => {
 
-document.addEventListener("keydown", function (event) {
     event.preventDefault();
-    let key = event.key;
-    if (event.key === " ") {
-        key = "Space";
+  });
+
+  key.addEventListener("click", () => {
+    const keyName = key.dataset.key;
+
+    if (!keyName) return;
+
+    display.focus();
+
+    if (keyName === "CapsLock") {
+      capsLock = !capsLock;
+      updateModifierKeys();
+      showStatus(`Caps Lock ${capsLock ? "on" : "off"}.`);
+      return;
     }
-    if (event.key === "CapsLock") {
-        capsLock = !capsLock;
-        toggleActiveKey("CapsLock");
-        return;
+
+    if (keyName === "Shift") {
+      shiftActive = !shiftActive;
+      updateModifierKeys();
+      showStatus(`Shift ${shiftActive ? "on" : "off"}.`);
+      return;
     }
-    if (event.key === "Shift") {
-        shiftPressed = true;
-        toggleActiveKey("Shift");
-        return;
+
+    if (["Control", "Alt", "Meta"].includes(keyName)) {
+      key.classList.toggle("active");
+      const isActive = key.classList.contains("active");
+      key.setAttribute("aria-pressed", String(isActive));
+      showStatus(`${keyName} ${isActive ? "selected" : "released"}.`);
+      return;
     }
-    if (event.key === "Control") {
-        ctrlPressed = true;
-        toggleActiveKey("Control");
-        return;
+
+    const handled = handleSpecialKey(keyName);
+
+    if (!handled) {
+      const character = getCharacter(keyName);
+      insertText(character);
     }
-    if (event.key === "Alt") {
-        altPressed = true;
-        toggleActiveKey("Alt");
-        return;
+
+ 
+    if (shiftActive) {
+      shiftActive = false;
+      updateModifierKeys();
     }
-    if (event.key === "Backspace") {
-        handleKey("Backspace");
-        return;
-    }
-    if (event.key === "Enter") {
-        handleKey("Enter");
-        return;
-    }
-    if (event.key === "Tab") {
-        handleKey("Tab");
-        return;
-    }
-    if (event.key === "Delete") {
-        handleKey("Delete");
-        return;
-    }
-    if (event.key.startsWith("F") && event.key.length <= 3) {
-        showFunctionMessage(event.key);
-        return;
-    }
-    if (event.key.startsWith("Arrow")) {
-        handleKey(event.key);
-        return;
-    }
-    if (event.key.length === 1) {
-        handleKey(event.key);
-    }
+
+    showStatus(`${keyName} pressed.`);
+  });
 });
 
-document.addEventListener("keyup", function (event) {
-    if (event.key === "Shift") {
-        shiftPressed = false;
-        removeActiveKey("Shift");
+if (clearButton) {
+  clearButton.addEventListener("click", () => {
+    display.value = "";
+    display.focus();
+    showStatus("Text cleared.");
+  });
+}
+if (copyButton) {
+  copyButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(display.value);
+      showStatus("Text copied successfully!");
+    } catch (error) {
+
+      display.focus();
+      display.select();
+
+      const copied = document.execCommand("copy");
+
+      display.setSelectionRange(
+        display.value.length,
+        display.value.length
+      );
+
+      showStatus(
+        copied
+          ? "Text copied successfully!"
+          : "Unable to copy text. Please copy it manually."
+      );
     }
-    if (event.key === "Control") {
-        ctrlPressed = false;
-        removeActiveKey("Control");
-    }
-    if (event.key === "Alt") {
-        altPressed = false;
-        removeActiveKey("Alt");
-    }
+  });
+}
+
+display.addEventListener("input", () => {
+  showStatus("Text updated.");
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "CapsLock") {
+    capsLock = event.getModifierState("CapsLock");
+    updateModifierKeys();
+  }
 });

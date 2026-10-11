@@ -1,288 +1,292 @@
+/* ---------- Reset and base styles ---------- */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    color-scheme: dark;
+    font-family: "Poppins", sans-serif;
+    background: #020817;
+    color: #f8fafc;
+}
+
 body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #020817, #0b1733, #102a56);
-    font-family: "Poppins", sans-serif;
-    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 12px;
+    padding: 24px;
+    background: linear-gradient(135deg, #020817, #0b1733, #102a56);
 }
+
+button,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* ---------- Main container ---------- */
 
 .keyboard-container {
     width: 100%;
     max-width: 1250px;
-    background: rgba(15, 27, 50, 0.95);
-    border: 1px solid rgba(80, 120, 180, 0.4);
+    padding: 24px;
+    background: #0f1b32;
+    border: 1px solid #466080;
     border-radius: 18px;
-    padding: 18px 20px 20px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 50px rgb(0 0 0 / 35%);
 }
 
 .keyboard-title {
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 22px;
 }
 
 .keyboard-title h1 {
-    font-size: 30px;
+    margin-bottom: 6px;
+    font-size: clamp(24px, 4vw, 32px);
     font-weight: 700;
-    margin-bottom: 2px;
 }
 
-.keyboard-title p {
-    font-size: 13px;
-    color: #94a3b8;
+.keyboard-title p,
+.keyboard-footer p {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.7;
 }
+
+/* ---------- Text input ---------- */
 
 .display-area {
-    width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+}
+
+.display-area label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 #textInput {
+    display: block;
     width: 100%;
-    height: 95px;
-    resize: none;
-    outline: none;
-    padding: 14px 16px;
+    min-height: 130px;
+    padding: 14px;
+    resize: vertical;
+    border: 2px solid #607895;
+    border-radius: 10px;
     background: #020817;
-    color: #e2e8f0;
-    border: 1px solid #29456d;
-    border-radius: 12px;
-    font-family: "Poppins", sans-serif;
-    font-size: 14px;
+    color: #f8fafc;
+    font-size: 15px;
+    line-height: 1.7;
 }
 
 #textInput::placeholder {
-    color: #64748b;
+    color: #c0ccdc;
 }
 
-#textInput:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+#textInput:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+    border-color: #93c5fd;
+}
+
+.input-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.utility-button {
+    padding: 9px 16px;
+    border: 1px solid #7ba9df;
+    border-radius: 8px;
+    background: #17365b;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.utility-button:hover {
+    background: #244d7b;
+}
+
+/* ---------- Status message ---------- */
+
+.status-message {
+    min-height: 24px;
+    margin: 12px 0;
+    color: #bfdbfe;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ---------- Keyboard layout ---------- */
+
+.keyboard-section {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #466080;
+    border-radius: 12px;
+    background: #142137;
 }
 
 .keyboard {
-    width: 100%;
+    min-width: 790px;
     padding: 12px;
-    background: rgba(20, 33, 55, 0.9);
-    border: 1px solid #29456d;
-    border-radius: 15px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 7px;
 }
 
 .keyboard-row {
+    display: flex;
+    gap: 6px;
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(30, minmax(0, 1fr));
-    gap: 5px;
 }
 
 .key {
-    min-width: 0;
-    height: 43px;
-    border: 1px solid rgba(91, 119, 153, 0.45);
-    border-radius: 8px;
-    background: linear-gradient(
-        145deg,
-        rgba(32, 48, 72, 0.98),
-        rgba(20, 34, 55, 0.98)
-    );
-    color: #e2e8f0;
-    font-family: "Poppins", sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: 0.15s ease;
-}
-
-.key:hover {
-    background: linear-gradient(
-        145deg,
-        #29466d,
-        #1c385b
-    );
-    border-color: #4b78ae;
-    transform: translateY(-1px);
-}
-
-.key:active {
-    transform: translateY(1px);
-    background: #16345a;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 46px;
+    padding: 5px;
+    border: 1px solid #607895;
+    border-radius: 7px;
+    background: #203048;
+    color: #f8fafc;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 120ms ease,
+                border-color 120ms ease;
 }
 
 .key span {
     position: absolute;
     top: 3px;
-    right: 6px;
-    font-size: 8px;
-    color: #60a5fa;
+    right: 5px;
+    color: #bfdbfe;
+    font-size: 9px;
 }
 
-.function-row {
-    grid-template-columns: repeat(28, minmax(0, 1fr));
+.key:hover {
+    background: #294b70;
+    border-color: #93c5fd;
 }
+
+.key:active {
+    background: #365d87;
+}
+
+.key:focus-visible,
+.utility-button:focus-visible {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+    z-index: 2;
+}
+
+.key.active,
+.key[aria-pressed="true"] {
+    background: #245b87;
+    border-color: #93c5fd;
+    box-shadow: inset 0 0 0 1px #93c5fd;
+}
+
+/* Function keys */
 
 .function-row .key {
-    grid-column: span 2;
-    height: 40px;
+    min-height: 38px;
     font-size: 11px;
 }
 
-.keyboard-row:nth-child(2) .key {
-    grid-column: span 2;
+/* Special key widths */
+
+.key.wide {
+    flex: 1.8 1 0;
 }
 
-.keyboard-row:nth-child(2) .wide {
-    grid-column: span 4;
+.key.extra-wide {
+    flex: 2 1 0;
 }
 
-.keyboard-row:nth-child(3) .medium {
-    grid-column: span 4;
+.key.space-key {
+    flex: 5 1 0;
 }
 
-.keyboard-row:nth-child(3) .key:not(.medium) {
-    grid-column: span 2;
-}
-
-.keyboard-row:nth-child(3) .key:last-child {
-    grid-column: span 2;
-}
-
-.keyboard-row:nth-child(4) .medium {
-    grid-column: span 4;
-}
-
-.keyboard-row:nth-child(4) .key:not(.medium):not(.wide) {
-    grid-column: span 2;
-}
-
-.keyboard-row:nth-child(4) .wide {
-    grid-column: span 4;
-}
-
-.keyboard-row:nth-child(5) .large {
-    grid-column: span 5;
-}
-
-.keyboard-row:nth-child(5) .key:not(.large) {
-    grid-column: span 2;
-}
-
-.keyboard-row:nth-child(5) .large:last-child {
-    grid-column: span 5;
-}
-
-.bottom-row {
-    grid-template-columns: repeat(30, minmax(0, 1fr));
-    align-items: center;
-}
-
-.bottom-row > .key {
-    grid-column: span 2;
-}
-
-.bottom-row .space {
-    grid-column: span 14;
-}
+/* Arrow keys */
 
 .arrow-keys {
-    grid-column: span 4;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: 20px 20px;
+    grid-template-columns: repeat(3, minmax(25px, 1fr));
+    grid-template-rows: repeat(2, 25px);
     gap: 3px;
-}
-
-.arrow-keys > .arrow {
-    grid-column: 2 / span 2;
-    height: 20px;
-}
-
-.arrow-bottom {
-    grid-column: 1 / span 4;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3px;
-}
-
-.arrow-bottom .arrow {
-    height: 20px;
+    flex: 1.8 1 0;
+    align-self: center;
 }
 
 .arrow {
-    font-size: 10px;
-    border-radius: 5px;
+    min-height: 25px;
+    padding: 0;
+    font-size: 13px;
 }
 
-.medium,
-.large,
-.wide {
-    font-size: 11px;
+.arrow.up {
+    grid-column: 2;
+    grid-row: 1;
 }
 
-@media (max-width: 1100px) {
-
-    body {
-        padding: 8px;
-    }
-
-    .keyboard-container {
-        max-width: 1100px;
-        padding: 15px;
-    }
-
-    .keyboard-title h1 {
-        font-size: 27px;
-    }
-
-    #textInput {
-        height: 85px;
-    }
-
-    .keyboard {
-        padding: 9px;
-        gap: 4px;
-    }
-
-    .keyboard-row {
-        gap: 4px;
-    }
-
-    .key {
-        height: 40px;
-        font-size: 11px;
-    }
+.arrow.left {
+    grid-column: 1;
+    grid-row: 2;
 }
 
-@media (max-width: 750px) {
+.arrow.down {
+    grid-column: 2;
+    grid-row: 2;
+}
 
+.arrow.right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+/* ---------- Footer ---------- */
+
+.keyboard-footer {
+    margin-top: 16px;
+}
+
+.keyboard-footer p {
+    font-size: 12px;
+}
+
+/* ---------- Responsive design ---------- */
+
+@media (max-width: 600px) {
     body {
         align-items: flex-start;
-        padding: 8px;
+        padding: 10px;
     }
 
     .keyboard-container {
-        margin-top: 5px;
-        padding: 14px;
-        overflow-x: auto;
+        padding: 16px 12px;
+        border-radius: 12px;
     }
 
-    .keyboard-title h1 {
-        font-size: 24px;
+    .keyboard-title {
+        margin-bottom: 16px;
     }
 
     .keyboard-title p {
@@ -290,15 +294,27 @@ body {
     }
 
     #textInput {
-        height: 75px;
-        font-size: 13px;
+        min-height: 110px;
+        font-size: 14px;
     }
 
     .keyboard {
-        min-width: 850px;
+        min-width: 790px;
+        padding: 10px;
     }
 
-    .key {
-        height: 38px;
+    .input-actions {
+        gap: 8px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto;
+        animation: none;
+        transition: none;
     }
 }
